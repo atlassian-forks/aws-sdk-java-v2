@@ -151,6 +151,19 @@ public class EnhancedType<T> {
     }
 
     /**
+     * Create a type token for a optional, with the provided value type class.
+     *
+     * <p>
+     * Reasons this call may fail with a {@link RuntimeException}:
+     * <ol>
+     *     <li>If the provided type is null.</li>
+     * </ol>
+     */
+    public static <T> EnhancedType<Optional<T>> optionalOf(EnhancedType<T> valueType) {
+        return new EnhancedType<>(Optional.class, Arrays.asList(valueType), null);
+    }
+
+    /**
      * Create a type token for a list, with the provided value type class.
      *
      * <p>

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
@@ -76,11 +77,52 @@ public class EnhancedTypeTest {
             assertThat(v.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
         });
 
+        assertThat(EnhancedType.optionalOf(String.class)).satisfies(v -> {
+            assertThat(v.rawClass()).isEqualTo(Optional.class);
+            assertThat(v.rawClassParameters()).hasSize(1);
+            assertThat(v.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
+        });
+
         assertThat(EnhancedType.mapOf(String.class, Integer.class)).satisfies(v -> {
             assertThat(v.rawClass()).isEqualTo(Map.class);
             assertThat(v.rawClassParameters()).hasSize(2);
             assertThat(v.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
             assertThat(v.rawClassParameters().get(1).rawClass()).isEqualTo(Integer.class);
+        });
+    }
+
+    @Test
+    public void helperCreationMethodsWork__withEnhancedTypes() {
+        assertThat(EnhancedType.listOf(EnhancedType.listOf(String.class))).satisfies(v -> {
+            assertThat(v.rawClass()).isEqualTo(List.class);
+            assertThat(v.rawClassParameters()).hasSize(1);
+            assertThat(v.rawClassParameters()).first().satisfies(innerType -> {
+                assertThat(innerType.rawClass()).isEqualTo(List.class);
+                assertThat(innerType.rawClassParameters()).hasSize(1);
+                assertThat(innerType.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
+            });
+        });
+
+        assertThat(EnhancedType.optionalOf(EnhancedType.optionalOf(String.class))).satisfies(v -> {
+            assertThat(v.rawClass()).isEqualTo(Optional.class);
+            assertThat(v.rawClassParameters()).hasSize(1);
+            assertThat(v.rawClassParameters()).first().satisfies(innerType -> {
+                assertThat(innerType.rawClass()).isEqualTo(Optional.class);
+                assertThat(innerType.rawClassParameters()).hasSize(1);
+                assertThat(innerType.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
+            });
+        });
+
+        assertThat(EnhancedType.mapOf(EnhancedType.of(String.class), EnhancedType.mapOf(String.class, Integer.class))).satisfies(v -> {
+            assertThat(v.rawClass()).isEqualTo(Map.class);
+            assertThat(v.rawClassParameters()).hasSize(2);
+            assertThat(v.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
+            assertThat(v.rawClassParameters().get(1)).satisfies(innerType -> {
+                assertThat(innerType.rawClass()).isEqualTo(Map.class);
+                assertThat(innerType.rawClassParameters()).hasSize(2);
+                assertThat(innerType.rawClassParameters().get(0).rawClass()).isEqualTo(String.class);
+                assertThat(innerType.rawClassParameters().get(1).rawClass()).isEqualTo(Integer.class);
+            });
         });
     }
 

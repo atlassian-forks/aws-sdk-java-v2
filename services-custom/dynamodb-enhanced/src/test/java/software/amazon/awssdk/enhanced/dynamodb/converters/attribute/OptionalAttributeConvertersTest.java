@@ -25,6 +25,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
 import software.amazon.awssdk.enhanced.dynamodb.internal.converter.attribute.OptionalDoubleAttributeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.internal.converter.attribute.OptionalIntAttributeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.internal.converter.attribute.OptionalLongAttributeConverter;
@@ -48,6 +49,8 @@ public class OptionalAttributeConvertersTest {
         assertThat(transformTo(converter, fromNumber("0.0"))).hasValue(0.0);
         assertThat(transformTo(converter, fromNumber("4.9E-324"))).hasValue(Double.MIN_VALUE);
         assertThat(transformTo(converter, fromNumber("1.7976931348623157E308"))).hasValue(Double.MAX_VALUE);
+
+        assertThat(converter.attributeValueType()).isEqualTo(AttributeValueType.N);
     }
 
     @Test
@@ -63,6 +66,8 @@ public class OptionalAttributeConvertersTest {
         assertThat(transformTo(converter, fromNumber("-2147483648"))).hasValue(Integer.MIN_VALUE);
         assertThat(transformTo(converter, fromNumber("0"))).hasValue(0);
         assertThat(transformTo(converter, fromNumber("2147483647"))).hasValue(Integer.MAX_VALUE);
+
+        assertThat(converter.attributeValueType()).isEqualTo(AttributeValueType.N);
     }
 
     @Test
@@ -78,5 +83,7 @@ public class OptionalAttributeConvertersTest {
         assertThat(transformTo(converter, fromNumber("-9223372036854775808"))).hasValue(Long.MIN_VALUE);
         assertThat(transformTo(converter, fromNumber("0"))).hasValue(0);
         assertThat(transformTo(converter, fromNumber("9223372036854775807"))).hasValue(Long.MAX_VALUE);
+
+        assertThat(converter.attributeValueType()).isEqualTo(AttributeValueType.N);
     }
 }

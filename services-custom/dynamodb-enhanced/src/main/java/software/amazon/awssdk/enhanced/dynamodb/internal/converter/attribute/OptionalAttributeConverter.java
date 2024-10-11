@@ -50,7 +50,7 @@ public class OptionalAttributeConverter<T> implements AttributeConverter<Optiona
 
     @Override
     public AttributeValueType attributeValueType() {
-        return AttributeValueType.S;
+        return delegate.attributeValueType();
     }
 
     @Override
